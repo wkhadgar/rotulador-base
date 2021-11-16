@@ -60,6 +60,8 @@ class MainViewWindow:
     def draw(self, screen, status, data, tgt="file_name"):
         pygame.display.set_caption(f" 🏷 {data[tgt]} 🔘 {status}...")
         self.body = pygame.draw.rect(screen, (0,0,0), self.limits)
+        info_x_layout = 360
+        
         if tgt != "file_name":
             image = pygame.image.load(images_path+tgt)
             image = pygame.transform.scale(image, (self.limits[1]))
@@ -69,11 +71,11 @@ class MainViewWindow:
         if tgt[:] in data.keys():
             utils.screen_print(screen, f"label: {data[tgt]}", (250,250,250), width//2+60, height-50, size=20)
         if status == "start of labels":
-            utils.screen_print(screen, "start of data reached!", (250,250,250), 360, lower_layout_px+12, size=20)
+            utils.screen_print(screen, "start of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
         elif status == "end of labels":
-            utils.screen_print(screen, "end of data reached!", (250,250,250), 360, lower_layout_px+12, size=20)
+            utils.screen_print(screen, "end of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
         else:
-            utils.screen_print(screen, f"labeling file nº {list(data.keys()).index(tgt)+1}", (250,250,250), 360, lower_layout_px+12, size=20)
+            utils.screen_print(screen, f"labeling file nº {list(data.keys()).index(tgt)+1}", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
 
 def handle_click(buttons):
     counter = 0

@@ -6,7 +6,7 @@ import glob
 
 pygame.init()
 
-width, height = 900, 720
+width, height = 1200, 720
 lower_layout_px = height-60
 
 images_path = "images_ar_base/"

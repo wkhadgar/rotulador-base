@@ -61,7 +61,6 @@ class MainViewWindow:
         pygame.display.set_caption(f" 🏷 {data[tgt]} 🔘 {status}...")
         self.body = pygame.draw.rect(screen, (0,0,0), self.limits)
         info_x_layout = 360
-        
         if tgt != "file_name":
             image = pygame.image.load(images_path+tgt)
             image = pygame.transform.scale(image, (self.limits[1]))

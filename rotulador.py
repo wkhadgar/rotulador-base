@@ -9,8 +9,8 @@ pygame.init()
 width, height = 1500, 900
 lower_layout_px = height-60
 
-images_path = "images_ar_base/"
-labels_path = "rotulacao/labels_ar_by_name_full.csv" # formato das labels: filename, [labels]
+images_path = "images_base/"
+labels_path = "rotulacao/labels_by_name.csv" # formato das labels: filename, [labels]
 dest_labels_path = labels_path  #mudar caso não queira sobrescrever
 
 num_classes = 11 #numero de classes de rotulação

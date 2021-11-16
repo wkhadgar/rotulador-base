@@ -1,5 +1,4 @@
 import pygame
-import numpy as np
 
 def screen_print(screen, text, color, x, y, size=30, font="Segoe UI Symbol"):
 

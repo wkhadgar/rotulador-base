@@ -95,9 +95,12 @@ def data_add(data_dic, indic_list, tgt):
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("rotulador geral")
+###
+#comentar linhas abaixo caso de dor de cabeça com o diretorio de execução (é so estetica)
 icon = pygame.image.load("rotulador-base/res/label-icon.png")
 pygame.display.set_icon(icon)
-
+#
+###
 
 viewing = MainViewWindow()
 

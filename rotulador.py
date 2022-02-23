@@ -4,25 +4,32 @@ import pygame
 import numpy as np
 import glob
 
-pygame.init()
-
-width, height = 1200, 720
+width, height = 1800, 1000 
 lower_layout_px = height-60
 
-images_path = "images_ar_base/"
-labels_path = "rotulacao/labels_ar_by_name_full.csv" # formato das labels: filename, [labels]
+
+images_path = "rotulacao/test_images/"
+img_format = "jpg"
+labels_path = "rotulacao/test_labels.csv" # formato das labels: filename, [labels]
 dest_labels_path = labels_path  #mudar caso não queira sobrescrever
 
-num_classes = 11 #numero de classes de rotulação
+class_names = ["test AAAAAAAAA", "teste B", "test C", "test D", "caso y"]
+num_classes = len(class_names) #numero de classes de rotulação
+
+
+pygame.init()
 
 class Button:
-    def __init__(self, start, size=(100,50), color=(130,130,130), name="", border=1, text_size=20, text_y_offset = 10, font="Segoe UI Symbol") -> None:
+    def __init__(self, start, size=(width//18,height//20), color=(130,130,130), name="", border=1, text_size=height//60, text_y_offset=height/150, font="Segoe UI Symbol") -> None:
         self.rect_value = (start, size)
         self.color = np.array(color)
-        self.body = self.body = pygame.draw.rect(screen, self.color, self.rect_value)
+        self.body = pygame.draw.rect(screen, self.color, self.rect_value)
         self.border = border
         self.on_focus = 0
-        self.name = name[:12] #max 11 chars
+        if len(name) > 11:
+            name = name[:12] + "..."
+            self.rect_value = (start, (size[0]+len(name)*2, size[1]))
+        self.name = name #max 11 chars
         self.text_size = text_size
         self.tyo = text_y_offset
         self.font = font
@@ -39,7 +46,7 @@ class Button:
         pygame.draw.rect(screen, self.color-80, self.rect_value, self.border) #border
 
 class Indicator:
-    def __init__(self, pos, size=9, color=(0,200,0)) -> None:
+    def __init__(self, pos, size=height//140, color=(0,200,0)) -> None:
         self.pos = pos
         self.size = size
         self.color = color
@@ -54,28 +61,39 @@ class Indicator:
         pygame.draw.circle(screen, (220,220,220), self.pos, self.size, 2)
 
 class MainViewWindow:
-    def __init__(self, start=(10,10), size=(width-110, height-80)) -> None:
+    def __init__(self, start=(10,10), size=(width-((width//10)+20), height-((height//20)+40))) -> None:
         self.limits = (start, size)
 
     def draw(self, screen, status, data, tgt="file_name"):
-        pygame.display.set_caption(f" 🏷 {data[tgt]} 🔘 {status}...")
-        self.body = pygame.draw.rect(screen, (0,0,0), self.limits)
-        info_x_layout = 360
-        if tgt != "file_name":
-            image = pygame.image.load(images_path+tgt)
-            image = pygame.transform.scale(image, (self.limits[1]))
-            screen.blit(image, self.limits[0])
-        pygame.draw.rect(screen, (250,250,250), self.limits, 2)
-        utils.screen_print(screen, tgt, (250,0,0), self.limits[0][0]+10, self.limits[0][1]+10, size=20, font="Arial")
-        if tgt[:] in data.keys():
-            utils.screen_print(screen, f"label: {data[tgt]}", (250,250,250), width//2+60, height-50, size=20)
-        if status == "start of labels":
-            utils.screen_print(screen, "start of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
-        elif status == "end of labels":
-            utils.screen_print(screen, "end of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
+        if not tgt == "NO FILES FOUND":
+            pygame.display.set_caption(f" 🏷 {data[tgt]} f{list(data.keys()).index(tgt)+1} 🔘 {status}...")
+            self.body = pygame.draw.rect(screen, (10,10,10), self.limits)
+            info_x_layout = 360
+            if tgt != "file_name":
+                image = pygame.image.load(images_path+tgt)
+                im_size = image.get_size()
+                expand_axis = np.argmin(im_size)
+                if im_size[0] == im_size[1]:
+                    expand_axis = 1
+                factor = self.limits[1][expand_axis]/im_size[expand_axis]
+                image = pygame.transform.rotozoom(image, 0, factor)
+                screen.blit(image, ((self.limits[1][0]//2)-(image.get_size()[0]//2), self.limits[0][1])) #centralizar a imagem
+            pygame.draw.rect(screen, (250,250,250), self.limits, 2)
+            utils.screen_print(screen, tgt, (250,0,0), self.limits[0][0]+10, self.limits[0][1]+10, size=20, font="Arial")
+            if tgt[:] in data.keys():
+                utils.screen_print(screen, f"label: {data[tgt]}", (250,250,250), width//2+60, height-50, size=20)
+            if status == "start of labels":
+                utils.screen_print(screen, "start of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
+            elif status == "end of labels":
+                utils.screen_print(screen, "end of data reached!", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
+            else:
+                utils.screen_print(screen, f"labeling file nº {list(data.keys()).index(tgt)+1}", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
         else:
-            utils.screen_print(screen, f"labeling file nº {list(data.keys()).index(tgt)+1}", (250,250,250), info_x_layout, lower_layout_px+12, size=20)
-
+            pygame.display.set_caption(tgt)
+            self.body = pygame.draw.rect(screen, (0,0,0), self.limits)
+            pygame.draw.rect(screen, (250,250,250), self.limits, 2)
+            utils.screen_print(screen, tgt, (250,0,0), self.limits[0][0]+10, self.limits[0][1]+10, size=20, font="Arial")
+            
 def handle_click(buttons):
     counter = 0
     for button in buttons:
@@ -95,9 +113,11 @@ def data_add(data_dic, indic_list, tgt):
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("rotulador geral")
-icon = pygame.image.load("rotulador-base/res/label-icon.png")
-pygame.display.set_icon(icon)
 
+#comentar caso de problema
+icon = pygame.image.load("res/label-icon.png") 
+pygame.display.set_icon(icon)
+##
 
 viewing = MainViewWindow()
 
@@ -106,14 +126,14 @@ all_buttons = [
     Button((170, lower_layout_px), name=" "*3 + "🢂", text_size=35, text_y_offset=1), #b1 previous
     Button((275, lower_layout_px), size=(50,50), name="⭲", text_size=45, text_y_offset=-5), #b2 last
     Button((10, lower_layout_px), size=(50,50), name="⭰", text_size=45, text_y_offset=-5), #b3 first
-    Button((width-310, lower_layout_px), name="reset label", font="Arial", text_y_offset=12), #b4 reset
-    Button((width-200, lower_layout_px), name=" "*4 + "save", font="Arial", text_y_offset=12)] #b5 save
-
+    Button((width*0.777, lower_layout_px), name="reset label", font="Arial", text_y_offset=12, text_size=20), #b4 reset
+    Button((width*0.839, lower_layout_px), name=" "*4 + "save", font="Arial", text_y_offset=12, text_size=20)] #b5 save
 fixed_buttons = len(all_buttons)
+
 indicators = []
 for i in range(30, 60*num_classes, 60):
-    indicators.append(Indicator((width-81, i+25)))
-    all_buttons.append(Button((width-65, i), size=(50,50), name=f"{i//60}".rjust(3), border=4, font="Verdana"))
+    indicators.append(Indicator((width-160, i+25)))
+    all_buttons.append(Button((width-145, i), name=f"{class_names[i//60]}".rjust(3), border=4, font="Arial", text_y_offset=15))
 
 
 named_df = pd.read_csv(labels_path) #carregando os dados
@@ -121,16 +141,31 @@ for i, info in named_df.iterrows(): #achar a ultima alteração
     if info[1] == "[]":
         last_append = i
         break
-print(f"already labeled {last_append} images")
-
+    
+for image_name in glob.glob(images_path+f"*.{img_format}"):
+        image_name = image_name[len(images_path):]
+        if image_name not in list(named_df.iterrows()):
+            named_df = named_df.append({"filename": image_name, "labels": "[]"}, ignore_index=True)
+            named_df.to_csv(labels_path, index=False)
+            
+            
+try:        
+    print(f"already labeled {last_append} images")
+except NameError:
+    last_append = 1
+    
 # gerando o dict dos dados
 data = {}
 for i, info in named_df.iterrows():
     data[info[0]] = info[1]
-for image_name in glob.glob(images_path+"*.jpg"): #mudar de acordo com a extensão das imagens
+for image_name in glob.glob(images_path+f"*.{img_format}"): #mudar de acordo com a extensão das imagens
     if image_name[len(images_path):] not in data.keys():
         data[image_name[len(images_path):]] = []
-this_file = list(data.keys())[0]
+try:
+    this_file = list(data.keys())[0]
+except IndexError:
+    print("NO Images found at images path")
+    this_file = "NO FILES FOUND"
 
 
 run = True
@@ -205,8 +240,8 @@ while run:
         this_file = list(data.keys())[act_file]
         action_trigger = 0
 
-    viewing.draw(screen, status, data, tgt=this_file,)
     
+    viewing.draw(screen, status, data, tgt=this_file,)
 
     for but in all_buttons:
         but.draw(screen)
@@ -216,6 +251,13 @@ while run:
     
     pygame.display.update()
 
+for k in data:
+    num_labels = data[k] 
+    named_label = []
+    if num_labels != "[]":
+        for n in num_labels:
+            named_label.append(class_names[n])
+    data[k] = named_label
 final_df = pd.DataFrame.from_dict(dict(enumerate(zip(data.keys(), data.values()))), orient="index", columns=["filename", "labels"])
 final_df.to_csv(dest_labels_path, index=False)
 print("alterações sobrescritas no arquivo")

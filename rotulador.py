@@ -113,20 +113,11 @@ def data_add(data_dic, indic_list, tgt):
 
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("rotulador geral")
-<<<<<<< HEAD
 
 #comentar caso de problema
 icon = pygame.image.load("res/label-icon.png") 
 pygame.display.set_icon(icon)
 ##
-=======
-###
-#comentar linhas abaixo caso de dor de cabeça com o diretorio de execução (é so estetica)
-icon = pygame.image.load("rotulador-base/res/label-icon.png")
-pygame.display.set_icon(icon)
-#
-###
->>>>>>> 897f6ac04fc69a9fe9e5a3bc3564c1961572d68f
 
 viewing = MainViewWindow()
 

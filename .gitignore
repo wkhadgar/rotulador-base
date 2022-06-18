@@ -1,1 +1,11 @@
-__pycache__
+# Pastas do environment
+__pycache__/
+rot-env/
+
+# database
+rotulation/
+
+#build 
+dist/
+build/
+*.spec

@@ -1,0 +1,52 @@
+{
+    "emotions": [
+        "N.A",
+        "happy",
+        "neutral",
+        "unhappy"
+    ],
+    
+    "postures": [
+        "N.A.", 
+        "standing", 
+        "sitting", 
+        "crouching", 
+        "lying (R)", 
+        "lying (L)", 
+        "lying (V)", 
+        "lying (B)"
+    ],
+
+    "actions": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+    ],
+    
+    "head": [
+        "N.A.", 
+        "up", 
+        "neutral", 
+        "down", 
+        "tilted (L)", 
+        "tilted (R)"
+    ],
+    
+    "tail pos": [
+        "N.A.", 
+        "up", 
+        "down", 
+        "neutral", 
+        "tucked"
+    ],
+    
+    "tail mov": [
+        "N.A.", 
+        "agitated", 
+        "+agitated", 
+        "calm", 
+        "flask"
+    ]
+}
